@@ -27,7 +27,7 @@ export function CTASection({
   return (
     <section className="container-site py-8 sm:py-12" aria-labelledby="cta-heading">
       <Reveal direction="zoom" className="relative isolate overflow-hidden rounded-[2rem] bg-navy-900 px-6 py-14 sm:px-12 lg:rounded-[2.5rem] lg:px-16 lg:py-20">
-        <Image src={resolveImage(image)} alt="" fill sizes="(min-width: 1280px) 1200px, 100vw" className="-z-20 object-cover opacity-30" />
+        <Image src={resolveImage(image)} alt="Physiotherapist guiding a patient through a rehabilitation exercise" fill sizes="(min-width: 1280px) 1200px, 100vw" className="-z-20 object-cover opacity-30" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-900/90 to-navy-900/40" aria-hidden="true" />
         <div className="absolute -right-24 -top-24 -z-10 size-72 rounded-full bg-teal-400/25 blur-3xl" aria-hidden="true" />
         <div className="max-w-2xl">
@@ -96,7 +96,7 @@ export function InsurersSection({ settings, tone = "white" }: { settings: SiteSe
                   {loop.map((ins, i) => (
                     <li key={`${ins.name}-${i}`} className="grid h-20 w-40 shrink-0 place-items-center rounded-2xl border border-line bg-white px-4">
                       {ins.logo ? (
-                        <Image src={resolveImage(ins.logo)} alt="" width={128} height={56} className="max-h-12 w-auto object-contain" />
+                        <Image src={resolveImage(ins.logo)} alt={`${ins.name} logo`} width={128} height={56} className="max-h-12 w-auto object-contain" />
                       ) : (
                         <span className="text-center text-sm font-semibold text-navy-800">{ins.name}</span>
                       )}

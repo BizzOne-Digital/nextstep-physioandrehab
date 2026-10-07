@@ -147,7 +147,7 @@ export function ConditionsPreview({ conditions, total }: { conditions: Condition
           {conditions.map((c, i) => (
             <Reveal as="li" key={c.slug} delay={(i % 2) * 90}>
               <Link
-                href={`/conditions?q=${encodeURIComponent(c.name)}`}
+                href={`/conditions/${c.slug}`}
                 className="group flex h-full gap-4 rounded-2xl border border-line bg-white p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500/40 hover:shadow-card"
               >
                 <span className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-xl bg-mint-100 font-display text-sm font-bold text-teal-800 transition-colors group-hover:bg-teal-700 group-hover:text-white">

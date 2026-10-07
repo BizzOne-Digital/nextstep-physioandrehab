@@ -133,7 +133,7 @@ export function BenefitsList({ service, title }: { service: ServiceItem; title: 
         <div className="lg:sticky lg:top-32">
           <SectionHeading align="left" eyebrow="Key Benefits" title={<span id="benefits-heading">{title}</span>} />
           <Reveal delay={100} className="relative mt-8 hidden aspect-[4/3] overflow-hidden rounded-[2rem] shadow-card lg:block">
-            <Image src={resolveImage(service.image)} alt="" fill sizes="480px" className="object-cover" />
+            <Image src={resolveImage(service.image)} alt={`${service.shortTitle} treatment session`} fill sizes="480px" className="object-cover" />
           </Reveal>
         </div>
         <ul className="space-y-4">

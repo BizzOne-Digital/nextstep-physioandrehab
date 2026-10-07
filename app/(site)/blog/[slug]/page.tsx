@@ -9,12 +9,12 @@ import { Reveal } from "@/components/ui/Reveal";
 import { BlogCard } from "@/components/site/cards";
 import { ShareLinks } from "@/components/site/ShareLinks";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getPostBySlug, getPublishedPosts, getSiteSettings } from "@/lib/data";
+import { getPostBySlug, getPublishedPosts, getSiteSettings, getTeam } from "@/lib/data";
 import { buildMetadata } from "@/lib/metadata";
 import { resolveImage } from "@/lib/images";
 import { sanitizeRichText } from "@/lib/sanitize";
 import { absoluteUrl } from "@/lib/site";
-import { articleSchema } from "@/lib/structured-data";
+import { articleSchema, extractFaqsFromHtml, faqSchema } from "@/lib/structured-data";
 import { formatDate, phoneHref, readingTime } from "@/lib/utils";
 
 export const revalidate = 300;
@@ -40,11 +40,12 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
 
 export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">) {
   const { slug } = await params;
-  const [post, posts, settings] = await Promise.all([getPostBySlug(slug), getPublishedPosts(), getSiteSettings()]);
+  const [post, posts, settings, team] = await Promise.all([getPostBySlug(slug), getPublishedPosts(), getSiteSettings(), getTeam()]);
   if (!post) notFound();
 
   const image = resolveImage(post.featuredImage);
   const html = sanitizeRichText(post.content);
+  const postFaqs = extractFaqsFromHtml(html);
   const others = posts.filter((p) => p.slug !== post.slug);
   const related = [...others.filter((p) => p.category === post.category), ...others.filter((p) => p.category !== post.category)].slice(0, 3);
   const recent = others.slice(0, 4);
@@ -52,7 +53,8 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
 
   return (
     <>
-      <JsonLd data={articleSchema(post, image)} />
+      <JsonLd data={articleSchema(post, image, team)} />
+      {postFaqs.length >= 2 && <JsonLd data={faqSchema(postFaqs)} />}
       <article>
         <header className="bg-soft-gradient">
           <div className="container-site pb-10 pt-8 sm:pt-10 lg:pt-14">
@@ -61,7 +63,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
               <Link href={`/blog?category=${encodeURIComponent(post.category)}`} className="inline-flex rounded-full bg-mint-100 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-teal-800 hover:bg-teal-700 hover:text-white">
                 {post.category}
               </Link>
-              <h1 className="display-lg mt-5 text-balance">{post.title}</h1>
+              <h1 className="post-title display-lg mt-5 text-balance">{post.title}</h1>
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
                 <span className="font-semibold text-navy-900">{post.author}</span>
                 <span className="flex items-center gap-1.5">
@@ -79,13 +81,13 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
 
         <div className="container-site">
           <Reveal imageReveal className="relative -mt-2 aspect-[16/8] overflow-hidden rounded-[2rem] shadow-lift">
-            <Image src={image} alt="" fill priority sizes="(min-width: 1280px) 1176px, 100vw" className="object-cover" />
+            <Image src={image} alt={post.title} fill priority sizes="(min-width: 1280px) 1176px, 100vw" className="object-cover" />
           </Reveal>
         </div>
 
         <div className="container-site grid gap-12 py-14 lg:grid-cols-[1fr_320px] lg:gap-16 lg:py-20">
           <div className="min-w-0">
-            {post.excerpt && <p className="mb-8 border-l-4 border-teal-500 pl-5 text-xl leading-relaxed text-navy-800">{post.excerpt}</p>}
+            {post.excerpt && <p className="post-lede mb-8 border-l-4 border-teal-500 pl-5 text-xl leading-relaxed text-navy-800">{post.excerpt}</p>}
             <div className="prose-clinic" dangerouslySetInnerHTML={{ __html: html }} />
             <div className="mt-12 flex flex-col gap-6 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between">
               <ShareLinks url={url} title={post.title} />
@@ -117,7 +119,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
                     <li key={p.slug}>
                       <Link href={`/blog/${p.slug}`} className="group flex gap-3">
                         <span className="relative size-16 shrink-0 overflow-hidden rounded-xl">
-                          <Image src={resolveImage(p.featuredImage)} alt="" fill sizes="64px" className="object-cover" />
+                          <Image src={resolveImage(p.featuredImage)} alt={p.title} fill sizes="64px" className="object-cover" />
                         </span>
                         <span>
                           <span className="line-clamp-2 text-sm font-semibold leading-snug text-navy-900 group-hover:text-teal-700">{p.title}</span>

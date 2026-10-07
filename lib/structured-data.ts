@@ -1,5 +1,5 @@
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
-import type { BlogPostItem, FAQItem, QA, ServiceItem, SiteSettings } from "@/types";
+import type { BlogPostItem, FAQItem, QA, ServiceItem, SiteSettings, TeamMemberItem } from "@/types";
 
 const DAY_MAP: Record<string, string> = {
   monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday",
@@ -89,7 +89,22 @@ export function serviceSchema(service: ServiceItem, settings: SiteSettings) {
   };
 }
 
-export function articleSchema(post: BlogPostItem, image: string) {
+/**
+ * Article schema. If the post's author matches a team member, the author is a
+ * Person with credentials and a profile link; otherwise it is the clinic.
+ */
+export function articleSchema(post: BlogPostItem, image: string, team: TeamMemberItem[] = []) {
+  const member = team.find((m) => m.name.trim().toLowerCase() === (post.author || "").trim().toLowerCase());
+  const author = member
+    ? {
+        "@type": "Person",
+        name: member.name,
+        jobTitle: member.title,
+        url: absoluteUrl(`/our-team/${member.slug}`),
+        ...(member.qualifications.length ? { hasCredential: member.qualifications.map((q) => ({ "@type": "EducationalOccupationalCredential", name: q })) } : {}),
+        worksFor: { "@id": `${SITE_URL}/#clinic` },
+      }
+    : { "@type": "Organization", name: post.author || SITE_NAME, url: SITE_URL };
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -98,9 +113,25 @@ export function articleSchema(post: BlogPostItem, image: string) {
     image: [absoluteUrl(image)],
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
-    author: { "@type": "Organization", name: post.author || SITE_NAME, url: SITE_URL },
+    author,
     publisher: { "@type": "Organization", name: SITE_NAME, logo: { "@type": "ImageObject", url: absoluteUrl("/images/brand/logo.png") } },
     mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(`/blog/${post.slug}`) },
     articleSection: post.category,
+    // Voice assistants: read the title and the lede summary.
+    speakable: { "@type": "SpeakableSpecification", cssSelector: [".post-title", ".post-lede"] },
   };
+}
+
+/** Extracts question/answer pairs (an h2/h3 ending in "?" followed by text) from post HTML. */
+export function extractFaqsFromHtml(html: string): QA[] {
+  const strip = (v: string) =>
+    v.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&rsquo;/g, "'").replace(/\s+/g, " ").trim();
+  const out: QA[] = [];
+  const re = /<h[23][^>]*>([\s\S]*?)<\/h[23]>\s*((?:<(?:p|ul|ol)[^>]*>[\s\S]*?<\/(?:p|ul|ol)>\s*)+)/gi;
+  for (const m of html.matchAll(re)) {
+    const question = strip(m[1]);
+    const answer = strip(m[2]);
+    if (question.endsWith("?") && answer.length >= 20) out.push({ question, answer: answer.slice(0, 1200) });
+  }
+  return out;
 }

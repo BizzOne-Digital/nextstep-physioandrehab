@@ -12,7 +12,7 @@ export function ServiceCard({ service, priority = false }: { service: ServiceIte
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={resolveImage(service.image)}
-          alt=""
+          alt={`${service.shortTitle} at Next Step Physio & Rehab Clinic`}
           fill
           priority={priority}
           sizes="(min-width: 1280px) 380px, (min-width: 768px) 45vw, 100vw"
@@ -150,7 +150,7 @@ export function BlogCard({ post, priority = false }: { post: BlogPostItem; prior
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={resolveImage(post.featuredImage)}
-          alt=""
+          alt={post.title}
           fill
           priority={priority}
           sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"

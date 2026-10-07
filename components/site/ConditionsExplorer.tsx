@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ConditionItem } from "@/types";
@@ -103,7 +104,9 @@ export function ConditionsExplorer({ conditions, categories }: { conditions: Con
                     className="group relative flex min-h-[7.5rem] flex-col items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-navy-900 to-navy-800 px-4 py-6 text-center shadow-card transition-all duration-300 hover:-translate-y-1 hover:from-teal-700 hover:to-teal-800 hover:shadow-lift sm:min-h-[8.5rem] sm:px-5"
                   >
                     <span className="absolute -right-6 -top-6 size-20 rounded-full bg-white/5 transition-transform duration-500 group-hover:scale-150" aria-hidden="true" />
-                    <span className="relative font-display text-[0.95rem] font-bold leading-snug text-white sm:text-lg">{c.name}</span>
+                    <Link href={`/conditions/${c.slug}`} className="z-10 font-display text-[0.95rem] font-bold leading-snug text-white after:absolute after:inset-0 sm:text-lg">
+                      {c.name}
+                    </Link>
                     <span className="relative mt-3 h-0.5 w-8 rounded-full bg-teal-400 transition-all duration-300 group-hover:w-14 group-hover:bg-white" aria-hidden="true" />
                     {c.description && (
                       <p className="relative mt-3 hidden text-sm leading-relaxed text-white/75 sm:block">{c.description}</p>

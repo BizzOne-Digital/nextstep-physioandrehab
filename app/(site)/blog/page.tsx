@@ -81,7 +81,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
             <Reveal className="mt-10">
               <article className="group relative grid overflow-hidden rounded-[2rem] border border-line bg-white shadow-card lg:grid-cols-2">
                 <div className="relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[380px]">
-                  <Image src={resolveImage(featured.featuredImage)} alt="" fill priority sizes="(min-width: 1024px) 620px, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <Image src={resolveImage(featured.featuredImage)} alt={featured.title} fill priority sizes="(min-width: 1024px) 620px, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
                 <div className="flex flex-col justify-center p-7 sm:p-10">
                   <span className="text-sm font-semibold text-teal-700">

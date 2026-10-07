@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getGallery, getPublishedPosts, getServices, getTeam } from "@/lib/data";
+import { getConditions, getGallery, getPublishedPosts, getServices, getTeam } from "@/lib/data";
 import { absoluteUrl } from "@/lib/site";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [services, posts, team, gallery] = await Promise.all([getServices(), getPublishedPosts(), getTeam(), getGallery()]);
+  const [services, posts, team, gallery, conditions] = await Promise.all([getServices(), getPublishedPosts(), getTeam(), getGallery(), getConditions()]);
   const now = new Date();
 
   const pages: Array<{ url: string; changeFrequency: "weekly" | "monthly" | "yearly"; priority: number }> = [
@@ -26,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticPages,
     ...services.map((s) => ({ url: absoluteUrl(`/services/${s.slug}`), lastModified: now, changeFrequency: "monthly" as const, priority: 0.85 })),
+    ...conditions.map((c) => ({ url: absoluteUrl(`/conditions/${c.slug}`), lastModified: now, changeFrequency: "yearly" as const, priority: 0.55 })),
     ...team.map((m) => ({ url: absoluteUrl(`/our-team/${m.slug}`), lastModified: now, changeFrequency: "yearly" as const, priority: 0.5 })),
     ...posts.map((p) => ({
       url: absoluteUrl(`/blog/${p.slug}`),

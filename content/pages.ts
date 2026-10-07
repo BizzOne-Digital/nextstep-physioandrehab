@@ -42,7 +42,7 @@ export const PAGE_DEFINITIONS: PageDefinition[] = [
     key: "home",
     label: "Homepage",
     path: "/",
-    seoTitle: "Physiotherapy in Brampton | Next Step Physio & Rehab Clinic",
+    seoTitle: "Next Step Physio & Rehab Clinic | Physiotherapy & Rehab in Brampton, ON",
     seoDescription:
       "Personalized physiotherapy, massage therapy, chiropractic care and rehabilitation in Brampton, ON. Experienced, caring team and direct billing available.",
     sections: [
