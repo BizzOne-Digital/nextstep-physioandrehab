@@ -1,13 +1,12 @@
 // Shared by `npm run seed` and the admin "Import default content" action.
 // Intentionally free of `server-only` so the CLI script can import it.
-import { Admin, BlogPost, Condition, FAQ, Page, Service, SiteSetting, TeamMember } from "@/models";
+import { Admin, Condition, FAQ, Page, Service, SiteSetting, TeamMember } from "@/models";
 import { defaultServices } from "@/content/services";
 import { defaultConditions } from "@/content/conditions";
 import { defaultFaqs } from "@/content/faqs";
 import { defaultTeam } from "@/content/team";
 import { defaultSettings } from "@/content/settings";
 import { PAGE_DEFINITIONS } from "@/content/pages";
-import blogPosts from "@/content/blog-posts.json";
 
 export interface SeedResult {
   [collection: string]: string;
@@ -15,6 +14,7 @@ export interface SeedResult {
 
 /**
  * Seeds content collections with the migrated website content.
+ * Blog posts are not seeded: they are read directly from content/blog-posts.json.
  * Without `force`, a collection is only seeded when it is empty, so admin
  * edits are never overwritten. With `force`, content collections are reset
  * (submissions, uploads and admins are never touched).
@@ -27,11 +27,6 @@ export async function seedDatabase({ force = false }: { force?: boolean } = {}):
     { name: "conditions", model: Condition, data: defaultConditions },
     { name: "faqs", model: FAQ, data: defaultFaqs },
     { name: "team", model: TeamMember, data: defaultTeam },
-    {
-      name: "blog posts",
-      model: BlogPost,
-      data: (blogPosts as Array<Record<string, unknown>>).map((p) => ({ ...p, publishedAt: new Date(String(p.publishedAt)) })),
-    },
   ] as const;
 
   for (const { name, model, data } of collections) {

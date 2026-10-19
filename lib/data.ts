@@ -18,7 +18,7 @@ import { defaultFaqs } from "@/content/faqs";
 import { defaultTeam } from "@/content/team";
 import { defaultSettings } from "@/content/settings";
 import { PAGE_DEFINITIONS, getPageDefinition } from "@/content/pages";
-import defaultPostsJson from "@/content/blog-posts.json";
+import { JSON_SLUGS, getJsonPosts } from "@/lib/json-posts";
 import type {
   BlogPostItem,
   ConditionItem,
@@ -31,7 +31,6 @@ import type {
   TestimonialItem,
 } from "@/types";
 
-const defaultPosts = defaultPostsJson as BlogPostItem[];
 
 type DbState = "ready" | "unseeded" | "unavailable";
 
@@ -146,26 +145,28 @@ export const getFaqs = cache(async (): Promise<FAQItem[]> =>
 );
 
 /* ---------------------------------- Blog ---------------------------------- */
+// Posts come from content/blog-posts.json (managed as a file) plus posts created
+// in the admin panel. A slug defined in the JSON file always uses the JSON version.
 const sortPosts = (posts: BlogPostItem[]) =>
   [...posts].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
-export const getPublishedPosts = cache(async (): Promise<BlogPostItem[]> =>
-  fromDb(
+export const getPublishedPosts = cache(async (): Promise<BlogPostItem[]> => {
+  const fromJson = getJsonPosts().map(({ content: _content, ...rest }) => ({ ...rest, content: "" }));
+  const fromAdmin = await fromDb<BlogPostItem[]>(
     () =>
       BlogPost.find({ status: "published", publishedAt: { $lte: new Date() } })
         .sort({ publishedAt: -1 })
         .select("-content")
         .lean(),
-    sortPosts(defaultPosts).map(({ content: _content, ...rest }) => ({ ...rest, content: "" })),
-  ),
-);
+    [],
+  );
+  return sortPosts([...fromJson, ...fromAdmin.filter((p) => !JSON_SLUGS.has(p.slug))]);
+});
 
-export const getPostBySlug = cache(async (slug: string): Promise<BlogPostItem | null> =>
-  fromDb(
-    () => BlogPost.findOne({ slug, status: "published", publishedAt: { $lte: new Date() } }).lean(),
-    defaultPosts.find((p) => p.slug === slug) ?? null,
-  ),
-);
+export const getPostBySlug = cache(async (slug: string): Promise<BlogPostItem | null> => {
+  if (JSON_SLUGS.has(slug)) return getJsonPosts().find((p) => p.slug === slug) ?? null;
+  return fromDb(() => BlogPost.findOne({ slug, status: "published", publishedAt: { $lte: new Date() } }).lean(), null);
+});
 
 /* --------------------------------- Gallery -------------------------------- */
 export const getGallery = cache(async (): Promise<GalleryItemData[]> =>

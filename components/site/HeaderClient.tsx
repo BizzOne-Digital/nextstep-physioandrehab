@@ -9,9 +9,12 @@ import { ServiceIcon } from "@/components/ui/Icon";
 import { buttonClasses } from "@/components/ui/Button";
 import { NAV_ITEMS, type NavService } from "@/components/site/nav";
 import { cn } from "@/lib/utils";
+import { ConditionsMenu, MobileConditionsMenu, type ConditionGroup } from "@/components/site/ConditionsMenu";
 
 interface Props {
   services: NavService[];
+  conditionGroups: ConditionGroup[];
+  conditionTotal: number;
   phone: string;
   phoneLink: string;
   email: string;
@@ -21,7 +24,7 @@ interface Props {
   announcement?: string;
 }
 
-export function HeaderClient({ services, phone, phoneLink, email, address, hoursLabel, logo, announcement }: Props) {
+export function HeaderClient({ services, conditionGroups, conditionTotal, phone, phoneLink, email, address, hoursLabel, logo, announcement }: Props) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
@@ -182,7 +185,7 @@ export function HeaderClient({ services, phone, phoneLink, email, address, hours
                     {megaOpen && (
                         <div
                           id="services-menu"
-                          className="menu-pop absolute inset-x-0 top-full flex justify-center px-4"
+                          className="absolute inset-x-0 top-full flex justify-center px-4"
                         >
                           <div className="grid w-full max-w-[980px] grid-cols-[1fr_260px] overflow-hidden rounded-3xl border border-line bg-white shadow-lift">
                             <ul className="grid grid-cols-2 gap-1 p-4 xl:grid-cols-3">
@@ -223,6 +226,8 @@ export function HeaderClient({ services, phone, phoneLink, email, address, hours
                         </div>
                       )}
                   </li>
+                ) : item.href === "/conditions" ? (
+                  <ConditionsMenu key={item.href} groups={conditionGroups} total={conditionTotal} linkClassName={linkCls("/conditions")} />
                 ) : (
                   <li key={item.href} className={cn(item.secondary && "hidden xl:block")}>
                     <Link href={item.href} className={linkCls(item.href)} aria-current={isActive(item.href) ? "page" : undefined}>
@@ -362,6 +367,8 @@ export function HeaderClient({ services, phone, phoneLink, email, address, hours
                             </ul>
                           )}
                         </>
+                      ) : item.href === "/conditions" ? (
+                        <MobileConditionsMenu groups={conditionGroups} active={isActive("/conditions")} />
                       ) : (
                         <Link
                           href={item.href}

@@ -237,7 +237,7 @@ export const RESOURCES: Record<ResourceKey, ResourceConfig> = {
     key: "blogs",
     label: "Blog Posts",
     singular: "Blog post",
-    description: "Articles for the blog. Drafts are never shown publicly.",
+    description: "New articles created here appear on the blog. Posts listed in content/blog-posts.json are managed in that file; editing their copies here has no effect on the website.",
     titleField: "title",
     searchFields: ["title", "slug", "category"],
     columns: [

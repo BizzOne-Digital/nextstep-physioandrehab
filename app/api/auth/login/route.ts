@@ -4,6 +4,7 @@ import { verifyCredentials } from "@/lib/auth";
 import { fail, getClientIp, handleApiError, readJson } from "@/lib/api";
 import { rateLimit } from "@/lib/rate-limit";
 import { SESSION_COOKIE, sessionCookieOptions, signSession } from "@/lib/session";
+import { getConfigIssues } from "@/lib/config-check";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,11 @@ export async function POST(request: Request) {
     const limit = rateLimit(`login:${ip}`, 8, 15 * 60 * 1000);
     if (!limit.allowed) {
       return fail(`Too many sign-in attempts. Try again in ${Math.ceil(limit.retryAfter / 60)} minutes.`, 429);
+    }
+
+    const issues = getConfigIssues().filter((i) => !i.startsWith("MONGODB_URI"));
+    if (issues.some((i) => i.startsWith("AUTH_SECRET"))) {
+      return fail("Admin login is not configured on this server (AUTH_SECRET). Please contact the site administrator.", 503);
     }
 
     const { email, password } = schema.parse(await readJson(request));

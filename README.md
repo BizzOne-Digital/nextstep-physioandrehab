@@ -72,6 +72,31 @@ Saving in the admin refreshes the public site immediately (on-demand revalidatio
 
 ---
 
+## Blog posts (JSON)
+
+Blog posts live in **`content/blog-posts.json`**, a list of post objects. To add, edit or remove a post, edit that file and deploy.
+
+1. Copy the object in `content/blog-post.template.json` into the list in `content/blog-posts.json` (posts can be in any order; the newest date shows first).
+2. Fill in the fields:
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `title` | Yes | Post heading |
+| `slug` | Yes | URL part: lowercase letters, numbers and hyphens → `/blog/your-slug`. Must be unique. |
+| `content` | Yes | Post body as HTML (`<p>`, `<h2>`, `<h3>`, `<ul>`, `<a>`, …). Unsafe HTML is removed automatically. |
+| `publishedAt` | Yes | Date like `2026-10-14`. A future date keeps the post hidden until that day. |
+| `excerpt` | Recommended | 40–60 word summary for the top of the post and the blog cards |
+| `featuredImage` | Recommended | `/images/...` (file in `public/images`) or an `images.unsplash.com` URL |
+| `category`, `author` | Optional | Defaults: "Physiotherapy" and "Next Step Physio & Rehab Clinic". If `author` matches a team member's name (e.g. "Priya"), her credentials are added to the post's schema. |
+| `status` | Optional | `"published"` (default) or `"draft"` to hide the post |
+| `seoTitle`, `seoDescription` | Optional | Fall back to the title and excerpt |
+
+3. Write question-style headings (`<h2>Does … help with …?</h2>`) followed by the answer: they are turned into FAQ rich-result data automatically.
+
+If an entry has a mistake (missing title, bad slug, invalid date), **only that post is skipped** and the reason is printed in the server logs, so the rest of the site keeps working. Old URLs for posts also keep working as long as the slug stays the same.
+
+Posts can still be written in **Admin → Blog posts** as well; they appear alongside the JSON posts. If the same slug exists in both, the JSON version is used.
+
 ## Project structure
 
 ```

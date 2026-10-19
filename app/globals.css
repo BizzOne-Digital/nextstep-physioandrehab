@@ -231,7 +231,7 @@
   from { opacity: 0; transform: translate3d(0, 10px, 0); }
   to { opacity: 1; transform: none; }
 }
-.menu-pop { animation: menu-pop 0.2s ease-out both; }
+.menu-pop { animation: menu-pop 0.2s ease-out; }
 
 /* Long pages: let the browser skip layout/paint for off-screen sections until needed. */
 main > section:nth-of-type(n + 3) {

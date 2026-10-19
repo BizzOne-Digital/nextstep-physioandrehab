@@ -1,0 +1,13 @@
+{
+  "title": "Your Post Title Here",
+  "slug": "your-post-title-here",
+  "excerpt": "A 40–60 word summary shown at the top of the post and on blog cards. Write it as a complete answer to the question your post is about.",
+  "content": "<p>First paragraph.</p><h2>A question your readers ask?</h2><p>The answer in one or two short paragraphs.</p><ul><li>Point one</li><li>Point two</li></ul>",
+  "featuredImage": "/images/services/physiotherapy.webp",
+  "category": "Physiotherapy",
+  "author": "Next Step Physio & Rehab Clinic",
+  "status": "published",
+  "publishedAt": "2026-10-14",
+  "seoTitle": "Your Post Title Here | Next Step Physio & Rehab Clinic",
+  "seoDescription": "Up to 160 characters describing the post for Google results."
+}
